@@ -9,7 +9,7 @@ export const navigation = [
 ]
 
 export const projects: Project[] = [
-  { title: 'MentorX', summary: 'A platform that helps people find teammates and collaborators for their projects.', stack: ['React', 'Node.js', 'MongoDB'], liveUrl: 'https://www.rajcodex.xyz', featured: true, mark: 'MX' },
+  { title: 'MentorX', summary: 'A platform that helps people find teammates and collaborators for their projects.', stack: ['React', 'Node.js', 'MongoDB'], liveUrl: 'https://mentorx-alpha.vercel.app/', featured: true, mark: 'MX' },
   { title: 'SplitX', summary: 'A shared-expense app for organizing group spending and splitting bills.', stack: ['React', 'JavaScript'], liveUrl: 'https://splitxx.vercel.app/dashboard', mark: 'SX' },
   { title: 'VAHAK', summary: 'An application concept for sending parcels through Pune PMPML’s public transport network.', stack: ['JavaScript', 'Web app'], liveUrl: 'https://vahak-final.vercel.app', mark: 'VH' },
   { title: 'Invoax AI', summary: 'An AI-powered platform designed to automate and manage business operations.', stack: ['AI/ML', 'Web app'], liveUrl: 'https://innovex-ai-ops.vercel.app/', mark: 'IA' },

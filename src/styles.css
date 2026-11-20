@@ -98,6 +98,68 @@ html.reveal-enabled .social-card.is-visible{transform:translate3d(0,0,0)}
 @media(prefers-reduced-motion:reduce){.hero-art-inner{transform:none!important;will-change:auto}html.reveal-enabled [data-reveal],html.reveal-enabled [data-reveal].is-visible{clip-path:none;transform:none;transition:none;opacity:1;will-change:auto}.social-card,.social-card svg,.social-card b,.tech-mark,.project-monogram{transition:none!important}}
 @media(hover:hover) and (pointer:fine){html.reveal-enabled .project-card.is-visible:hover{transform:translate3d(0,-6px,0) scale(1);box-shadow:0 18px 45px #0002}html.reveal-enabled .tech-card.is-visible:hover{transform:translate3d(0,-5px,0) rotateX(0)}html.reveal-enabled .achievement-card.is-visible:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--yellow) 65%,var(--line));box-shadow:0 22px 50px #0002}html.reveal-enabled [data-reveal="hero-cta"].is-visible:hover{transform:translateY(-3px)}}
 @media(prefers-reduced-motion:reduce){.project-card:hover,.tech-card:hover,.achievement-card:hover,.social-card:hover{transform:none!important;box-shadow:none!important}}
+
+/* Version five: longer section rhythm with reversible directional reveals. */
+.section-block{padding-top:54px;padding-bottom:140px}
+.about.section-block{padding-top:54px;padding-bottom:100px}
+.achievement.section-block{padding-bottom:145px}
+.contact.section-block{padding:44px 50px 50px;min-height:620px}
+html.reveal-enabled [data-section-reveal]{opacity:0;will-change:transform,opacity;transition:opacity .68s cubic-bezier(.22,.68,0,1),transform .76s cubic-bezier(.22,.68,0,1)}
+html.reveal-enabled [data-section-reveal].is-visible{opacity:1;transform:translate3d(0,0,0)}
+html.reveal-enabled [data-section-reveal="about"]:not(.is-visible),
+html.reveal-enabled [data-section-reveal="projects"]:not(.is-visible){transform:translate3d(-40px,0,0)}
+html.reveal-enabled [data-section-reveal="skills"]:not(.is-visible),
+html.reveal-enabled [data-section-reveal="achievement"]:not(.is-visible){transform:translate3d(40px,0,0)}
+html.reveal-enabled [data-section-reveal="contact"]:not(.is-visible){transform:translate3d(0,40px,0)}
+html.reveal-enabled [data-section-reveal] [data-reveal]{transform:translate3d(0,10px,0);transition:opacity .62s cubic-bezier(.22,.68,0,1),transform .66s cubic-bezier(.22,.68,0,1);transition-delay:var(--reveal-delay,0ms)}
+html.reveal-enabled [data-section-reveal] [data-reveal].is-visible{transform:translate3d(0,0,0)}
+html.reveal-enabled [data-section-reveal="about"] .section-kicker{--reveal-delay:0ms}
+html.reveal-enabled [data-section-reveal="about"] [data-reveal="about-heading"]{--reveal-delay:70ms}
+html.reveal-enabled [data-section-reveal="about"] [data-reveal="about-copy"]{--reveal-delay:130ms}
+html.reveal-enabled [data-section-reveal="about"] .education-strip{--reveal-delay:200ms}
+html.reveal-enabled [data-section-reveal="skills"] .section-kicker{--reveal-delay:0ms}
+html.reveal-enabled [data-section-reveal="skills"] .section-heading-row h2{--reveal-delay:70ms}
+html.reveal-enabled [data-section-reveal="skills"] .section-heading-row>p{--reveal-delay:130ms}
+html.reveal-enabled [data-section-reveal="projects"] .section-kicker{--reveal-delay:0ms}
+html.reveal-enabled [data-section-reveal="projects"] .section-heading-row h2{--reveal-delay:70ms}
+html.reveal-enabled [data-section-reveal="projects"] .section-heading-row>p{--reveal-delay:130ms}
+html.reveal-enabled [data-section-reveal="achievement"] .section-kicker{--reveal-delay:0ms}
+html.reveal-enabled [data-section-reveal="achievement"] .achievement-visual{--reveal-delay:90ms}
+html.reveal-enabled [data-section-reveal="achievement"] .achievement-copy{--reveal-delay:160ms}
+html.reveal-enabled [data-section-reveal="contact"] .section-kicker{--reveal-delay:0ms}
+html.reveal-enabled [data-section-reveal="contact"] .contact-content{--reveal-delay:90ms}
+html.reveal-enabled [data-section-reveal="contact"] .contact-bottom{--reveal-delay:160ms}
+@media(max-width:850px){
+  .section-block{padding-top:50px;padding-bottom:118px}
+  .about.section-block{padding-top:50px;padding-bottom:90px}
+  .achievement.section-block{padding-bottom:125px}
+  .contact.section-block{padding:42px 34px 48px;min-height:590px}
+}
+@media(max-width:640px){
+  .section-block{padding-top:36px;padding-bottom:92px}
+  .about.section-block{padding-top:40px;padding-bottom:92px}
+  .achievement.section-block{padding-bottom:130px}
+  .contact.section-block{padding:34px 20px 40px;min-height:540px}
+  html.reveal-enabled [data-section-reveal]{transition-duration:.62s}
+  html.reveal-enabled [data-section-reveal="about"]:not(.is-visible),
+  html.reveal-enabled [data-section-reveal="projects"]:not(.is-visible){transform:translate3d(-34px,0,0)}
+  html.reveal-enabled [data-section-reveal="skills"]:not(.is-visible),
+  html.reveal-enabled [data-section-reveal="achievement"]:not(.is-visible){transform:translate3d(34px,0,0)}
+  html.reveal-enabled [data-section-reveal="contact"]:not(.is-visible){transform:translate3d(0,34px,0)}
+}
+@media(hover:hover) and (pointer:fine){
+  html.reveal-enabled [data-section-reveal] .project-card.is-visible:hover{transform:translate3d(0,-6px,0);box-shadow:0 18px 45px #0002}
+  html.reveal-enabled [data-section-reveal] .tech-card.is-visible:hover{transform:translate3d(0,-5px,0)}
+  html.reveal-enabled [data-section-reveal] .achievement-card.is-visible:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--yellow) 65%,var(--line));box-shadow:0 22px 50px #0002}
+}
+@media(prefers-reduced-motion:reduce){
+  html.reveal-enabled [data-section-reveal],
+  html.reveal-enabled [data-section-reveal].is-visible,
+  html.reveal-enabled [data-section-reveal] [data-reveal],
+  html.reveal-enabled [data-section-reveal] [data-reveal].is-visible{opacity:1;transform:none!important;transition:none!important;will-change:auto;clip-path:none}
+}
+.lamp-switch.is-auto-pulling .lamp-cord,
+.lamp-switch.is-auto-pulling .lamp-pull-handle{transition:transform .34s cubic-bezier(.22,.68,0,1),stroke .35s ease,fill .35s ease}
 .lamp-switch{position:relative;align-self:flex-start;width:48px;height:120px;flex:0 0 48px;margin-left:10px;margin-top:0;padding:0;border:0;background:transparent;color:var(--muted);display:grid;place-items:start center;overflow:visible;cursor:pointer;touch-action:none;isolation:isolate;-webkit-tap-highlight-color:transparent}
 .lamp-svg{position:relative;z-index:1;width:48px;height:120px;overflow:visible;display:block}
 .lamp-mount{fill:var(--muted);transition:fill .35s ease}

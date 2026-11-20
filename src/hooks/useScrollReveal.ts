@@ -1,21 +1,27 @@
 import { useEffect } from 'react'
 
-/** Adds viewport-triggered reveals without hiding content when motion is reduced. */
+/** Adds reversible viewport-triggered reveals without hiding content when motion is reduced. */
 export function useScrollReveal() {
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (reducedMotion.matches || !('IntersectionObserver' in window)) return
-    const targets = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    const targets = document.querySelectorAll<HTMLElement>('[data-reveal], [data-section-reveal]')
+    let observer: IntersectionObserver | undefined
+    try {
+      observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          const target = entry.target as HTMLElement
+          target.classList.toggle('is-visible', entry.isIntersecting)
+        }
+      }, { threshold: 0.04, rootMargin: '-5% 0px -5% 0px' })
+      targets.forEach(target => observer?.observe(target))
+    } catch {
+      observer?.disconnect()
+      // Keep the document visible if observer setup fails partway through.
+      return
+    }
+    // Only activate the CSS hidden state after observation setup succeeds.
     document.documentElement.classList.add('reveal-enabled')
-    const observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue
-        const target = entry.target as HTMLElement
-        target.classList.add('is-visible')
-        observer.unobserve(target)
-      }
-    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' })
-    targets.forEach(target => observer.observe(target))
 
     // A single passive scroll listener drives only the small number of marked
     // parallax elements, and only while they are near the viewport.
@@ -48,7 +54,7 @@ export function useScrollReveal() {
     requestParallaxFrame()
 
     return () => {
-      observer.disconnect()
+      observer?.disconnect()
       parallaxObserver.disconnect()
       window.removeEventListener('scroll', requestParallaxFrame)
       window.removeEventListener('resize', requestParallaxFrame)

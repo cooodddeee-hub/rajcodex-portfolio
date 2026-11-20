@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import InteractivePortrait from './components/InteractivePortrait'
 import RLogo from './components/RLogo'
 import ThemeLamp from './components/ThemeLamp'
@@ -10,9 +10,11 @@ function App() {
   useScrollReveal()
   useAnchorScroll()
   const [theme, setTheme] = useState<'dark' | 'light'>(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark')
+  const themeDemoPreview = useRef(false)
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
     document.documentElement.dataset.theme = theme
+    if (themeDemoPreview.current) return
     try { localStorage.setItem('raj-theme', theme) } catch { /* storage may be unavailable */ }
   }, [theme])
 
@@ -23,7 +25,14 @@ function App() {
       <nav className={menuOpen ? 'navigation is-open' : 'navigation'} aria-label="Main navigation">
         {navigation.map(item => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
       </nav>
-      <ThemeLamp theme={theme} onToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+      <ThemeLamp
+        theme={theme}
+        onToggle={() => setTheme(current => current === 'dark' ? 'light' : 'dark')}
+        onDemoToggle={() => {
+          themeDemoPreview.current = !themeDemoPreview.current
+          setTheme(current => current === 'dark' ? 'light' : 'dark')
+        }}
+      />
     </header>
 
     <main id="top">
@@ -38,20 +47,20 @@ function App() {
         <div className="hero-art" data-reveal="portrait"><div className="hero-art-inner" data-parallax><InteractivePortrait /><div className="hero-side-note" aria-hidden="true">A LITTLE CODE.<br />A LOT OF CURIOSITY.</div></div></div>
       </section>
 
-      <section className="about section-wrap section-block" id="about">
+      <section className="about section-wrap section-block" id="about" data-section-reveal="about">
         <div className="section-kicker" data-reveal><span>01</span><span>THE PERSON BEHIND THE PIXELS</span></div>
         <div className="about-grid"><h2 data-reveal="about-heading">Nice to meet<br /><span>you<span className="blue-period">.</span></span></h2><div className="about-copy" data-reveal="about-copy"><p>I’m a Computer Engineering student at Vishwakarma Institute of Technology, Pune, and a Data Science student exploring the intersection of full-stack development, artificial intelligence and creative problem-solving. I enjoy turning ideas into useful digital products, experimenting with emerging technologies and building solutions to real-world problems.</p><a href="#contact" className="text-link">Let’s connect <span>↗</span></a></div></div>
         <div className="education-strip" data-reveal><span className="education-stamp">VIT</span><div><strong>Vishwakarma Institute of Technology</strong><span>Computer Engineering · Second year · Data Science</span></div><span className="education-place">PUNE, INDIA</span></div>
         <div className="about-footnote"><span>THOUGHTFUL BY DESIGN</span><span>BUILT WITH INTENTION <b>✳</b></span></div>
       </section>
 
-      <section className="stack section-wrap section-block" id="skills">
+      <section className="stack section-wrap section-block" id="skills" data-section-reveal="skills">
         <div className="section-kicker" data-reveal><span>02</span><span>TOOLS OF THE TRADE</span></div>
         <div className="section-heading-row"><h2 data-reveal>A curious<br /><em>toolkit.</em></h2><p data-reveal>Technologies I work with and ideas<br />I’m excited to keep exploring.</p></div>
         <div className="tech-grid">{technologies.map((item, index) => <div className={`tech-card tech-${item.color}`} key={item.name} data-reveal style={{ '--reveal-delay': `${index * 65}ms` } as React.CSSProperties}><span className="tech-mark" aria-hidden="true">{item.mark}</span><span className="tech-name">{item.name}</span><span className="tech-index">0{index + 1}</span></div>)}</div>
       </section>
 
-      <section className="projects section-wrap section-block" id="projects">
+      <section className="projects section-wrap section-block" id="projects" data-section-reveal="projects">
         <div className="section-kicker" data-reveal><span>03</span><span>SELECTED WORK · BUILT BY ME</span></div>
         <div className="section-heading-row"><h2 data-reveal>Ideas made<br /><em>real.</em></h2><p data-reveal>Five projects, each an excuse<br />to solve something differently.</p></div>
         <div className="project-grid">{projects.map((project, index) => <a className={`project-card ${project.featured ? 'project-featured' : ''}`} key={project.title} href={project.liveUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title}: ${project.summary} Open project website in a new tab`} data-reveal style={{ '--reveal-delay': `${index * 90}ms` } as React.CSSProperties}>
@@ -60,7 +69,7 @@ function App() {
         </a>)}</div>
       </section>
 
-      <section className="achievement section-wrap section-block" id="achievement">
+      <section className="achievement section-wrap section-block" id="achievement" data-section-reveal="achievement">
         <div className="section-kicker" data-reveal><span>04</span><span>A MOMENT WORTH FRAMING</span></div>
         <div className="achievement-card" data-reveal>
           <div className="achievement-visual" data-reveal style={{ '--reveal-delay': '80ms' } as React.CSSProperties} aria-hidden="true"><span className="achievement-orbit orbit-one" /><span className="achievement-orbit orbit-two" /><span className="achievement-visual-kicker">RECOGNITION / 01</span><span className="achievement-medal">✳</span><p className="achievement-first">FIRST<br />PRIZE</p><span className="achievement-visual-foot">MUMBAI · OPENGEN AI</span></div>
@@ -68,7 +77,7 @@ function App() {
         </div>
       </section>
 
-      <section className="contact section-wrap section-block" id="contact">
+      <section className="contact section-wrap section-block" id="contact" data-section-reveal="contact">
         <div className="section-kicker" data-reveal><span>05</span><span>OPEN CHANNEL</span></div>
         <div className="contact-content" data-reveal><p className="eyebrow"><span className="live-dot" /> HAVE A GOOD ONE IN MIND?</p><h2>Let’s make<br /><em>it real.</em></h2><a className="button button-primary contact-button" href="mailto:salunkherajvardhan612@gmail.com">Email me <span aria-hidden="true">↗</span></a></div>
         <div className="contact-bottom" data-reveal="contact-bottom"><p>Good conversations make<br />great starting points.</p><div className="contact-social-column"><div className="social-links"><a href="https://github.com/Raj-s-salunkhe" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a><a href="https://www.linkedin.com/in/raj-salunkhe-373b7539b" target="_blank" rel="noopener noreferrer">LinkedIn <span>↗</span></a><a href="https://www.instagram.com/rajj_salunkhe/" target="_blank" rel="noopener noreferrer" aria-label="Instagram (opens in a new tab)"><span className="instagram-icon" aria-hidden="true">◎</span>Instagram <span>↗</span></a></div><div className="social-cards" aria-label="Social profiles">

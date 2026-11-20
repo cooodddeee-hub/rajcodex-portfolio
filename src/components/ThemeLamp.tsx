@@ -5,22 +5,115 @@ type Theme = 'dark' | 'light'
 type ThemeLampProps = {
   theme: Theme
   onToggle: () => void
+  onDemoToggle: () => void
 }
 
 type PointerStart = { id: number; y: number }
 const ROPE_LENGTH = 78
 const MAX_PULL = 56
 
-export default function ThemeLamp({ theme, onToggle }: ThemeLampProps) {
+export default function ThemeLamp({ theme, onToggle, onDemoToggle }: ThemeLampProps) {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const pointerStart = useRef<PointerStart | null>(null)
   const suppressClick = useRef(false)
   const snapTimeout = useRef<number | undefined>(undefined)
+  const welcomeTimeouts = useRef<number[]>([])
+  const welcomeFrame = useRef<number | undefined>(undefined)
+  const welcomeCancelled = useRef(false)
+  const welcomePlayed = useRef(false)
+  const welcomeActive = useRef(false)
+  const welcomePreview = useRef(false)
+  const onDemoToggleRef = useRef(onDemoToggle)
+  onDemoToggleRef.current = onDemoToggle
   const currentPull = useRef(0)
   const [pulling, setPulling] = useState(false)
   const [snapping, setSnapping] = useState(false)
+  const [autoPulling, setAutoPulling] = useState(false)
 
   useEffect(() => () => window.clearTimeout(snapTimeout.current), [])
+
+  const clearWelcomeTimers = () => {
+    welcomeTimeouts.current.forEach(window.clearTimeout)
+    welcomeTimeouts.current = []
+    if (welcomeFrame.current !== undefined) {
+      window.cancelAnimationFrame(welcomeFrame.current)
+      welcomeFrame.current = undefined
+    }
+  }
+
+  const cancelWelcomeDemo = () => {
+    welcomeCancelled.current = true
+    clearWelcomeTimers()
+    if (welcomePreview.current) {
+      welcomePreview.current = false
+      onDemoToggleRef.current()
+    }
+    welcomeActive.current = false
+    window.clearTimeout(snapTimeout.current)
+    setAutoPulling(false)
+    setSnapping(false)
+    const button = buttonRef.current
+    button?.style.setProperty('--rope-pull', '0px')
+    button?.style.setProperty('--rope-scale', '1')
+  }
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (motionPreference.matches) return
+
+    const schedule = (callback: () => void, delay: number) => {
+      const timeout = window.setTimeout(() => {
+        welcomeTimeouts.current = welcomeTimeouts.current.filter(item => item !== timeout)
+        callback()
+      }, delay)
+      welcomeTimeouts.current.push(timeout)
+    }
+
+    const startWelcomeDemo = () => {
+      if (welcomeCancelled.current || welcomePlayed.current) return
+      const button = buttonRef.current
+      if (!button) return
+      welcomePlayed.current = true
+      welcomeActive.current = true
+      setAutoPulling(true)
+      welcomeFrame.current = window.requestAnimationFrame(() => {
+        welcomeFrame.current = undefined
+        if (welcomeCancelled.current || !welcomeActive.current) return
+        const pull = 36
+        button.style.setProperty('--rope-pull', `${pull}px`)
+        button.style.setProperty('--rope-scale', String(1 + pull / ROPE_LENGTH))
+        schedule(() => {
+          if (!welcomeActive.current || welcomeCancelled.current) return
+          welcomePreview.current = true
+          onDemoToggleRef.current()
+        }, 210)
+        schedule(() => {
+          if (!welcomeActive.current || welcomeCancelled.current) return
+          if (welcomePreview.current) {
+            welcomePreview.current = false
+            onDemoToggleRef.current()
+          }
+          setAutoPulling(false)
+          startSnap(pull)
+          welcomeActive.current = false
+        }, 620)
+      })
+    }
+
+    const initialTimeout = window.setTimeout(() => {
+      welcomeTimeouts.current = welcomeTimeouts.current.filter(item => item !== initialTimeout)
+      startWelcomeDemo()
+    }, 600)
+    welcomeTimeouts.current.push(initialTimeout)
+    const handleMotionPreferenceChange = () => {
+      if (motionPreference.matches) cancelWelcomeDemo()
+    }
+    motionPreference.addEventListener('change', handleMotionPreferenceChange)
+    return () => {
+      clearWelcomeTimers()
+      motionPreference.removeEventListener('change', handleMotionPreferenceChange)
+    }
+  }, [])
 
   const startSnap = (pull: number) => {
     const button = buttonRef.current
@@ -36,12 +129,14 @@ export default function ThemeLamp({ theme, onToggle }: ThemeLampProps) {
   }
 
   const switchLamp = () => {
+    cancelWelcomeDemo()
     if (!snapping) startSnap(0)
     onToggle()
   }
 
   const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0) return
+    cancelWelcomeDemo()
     pointerStart.current = { id: event.pointerId, y: event.clientY }
     currentPull.current = 0
     window.clearTimeout(snapTimeout.current)
@@ -93,12 +188,16 @@ export default function ThemeLamp({ theme, onToggle }: ThemeLampProps) {
 
   return <button
     ref={buttonRef}
-    className={`lamp-switch ${theme === 'light' ? 'lamp-on' : 'lamp-off'}${pulling ? ' is-pulling' : ''}${snapping ? ' is-snapping' : ''}`}
+    className={`lamp-switch ${theme === 'light' ? 'lamp-on' : 'lamp-off'}${pulling ? ' is-pulling' : ''}${autoPulling ? ' is-auto-pulling' : ''}${snapping ? ' is-snapping' : ''}`}
     type="button"
     aria-label={`${action}; current theme is ${theme}`}
     aria-pressed={theme === 'light'}
     title={`${action} · ${theme} mode`}
     onClick={onButtonClick}
+    onFocus={cancelWelcomeDemo}
+    onKeyDown={event => {
+      if (event.key === 'Enter' || event.key === ' ') cancelWelcomeDemo()
+    }}
     onPointerDown={handlePointerDown}
     onPointerMove={handlePointerMove}
     onPointerUp={event => resetPull(event, true)}

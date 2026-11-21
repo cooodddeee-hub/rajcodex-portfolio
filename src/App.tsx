@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import InteractivePortrait from './components/InteractivePortrait'
+import HackathonShowcase from './components/HackathonShowcase'
 import RLogo from './components/RLogo'
 import ThemeLamp from './components/ThemeLamp'
 import { navigation, projects, technologies } from './data/portfolio'
@@ -17,6 +18,8 @@ function App() {
     if (themeDemoPreview.current) return
     try { localStorage.setItem('raj-theme', theme) } catch { /* storage may be unavailable */ }
   }, [theme])
+
+  if (window.location.pathname.replace(/\/+$/, '') === '/hackathon') return <HackathonShowcase />
 
   return <>
     <header className="site-header">
@@ -71,10 +74,10 @@ function App() {
 
       <section className="achievement section-wrap section-block" id="achievement" data-section-reveal="achievement">
         <div className="section-kicker" data-reveal><span>04</span><span>A MOMENT WORTH FRAMING</span></div>
-        <div className="achievement-card" data-reveal>
+        <a href="/hackathon" className="achievement-card achievement-card-link" data-reveal aria-label="Open the Hackathon 4.0 achievement showcase">
           <div className="achievement-visual" data-reveal style={{ '--reveal-delay': '80ms' } as React.CSSProperties} aria-hidden="true"><span className="achievement-orbit orbit-one" /><span className="achievement-orbit orbit-two" /><span className="achievement-visual-kicker">RECOGNITION / 01</span><span className="achievement-medal">✳</span><p className="achievement-first">FIRST<br />PRIZE</p><span className="achievement-visual-foot">MUMBAI · OPENGEN AI</span></div>
           <div className="achievement-copy" data-reveal style={{ '--reveal-delay': '180ms' } as React.CSSProperties}><span className="achievement-overline">FIRST PRIZE · OPENGEN AI</span><h2>First prize.<br /><em>Mumbai Hackathon.</em></h2><p>Organized by IES MCRC (IES Management College and Research Centre).</p><div className="award-bottom"><span>₹5,000 <small>CASH PRIZE</small></span><span className="award-domain">DOMAIN <b>OpenGen AI</b></span></div></div>
-        </div>
+        </a>
       </section>
 
       <section className="contact section-wrap section-block" id="contact" data-section-reveal="contact">
